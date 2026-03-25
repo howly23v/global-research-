@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GLOBAL RESEARCH TERMINAL // 世界最新研究ニュース</title>
+    <style>
+/* ============================================================
+   PERSONA 5 THEMED GLOBAL RESEARCH TERMINAL - API Version
+   Color Palette: #d92323 (Red), #0d0d0d (Black), #f5f5f5 (White),
+                  #ffdd00 (Yellow Accent), #1a1a2e (Dark Blue-Black)
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=Oswald:wght@400;600;700&family=Bebas+Neue&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --p5-red: #d92323;
+  --p5-dark-red: #a01a1a;
+  --p5-black: #0d0d0d;
+  --p5-dark: #1a1a2e;
+  --p5-white: #f5f5f5;
+  --p5-yellow: #ffdd00;
+  --p5-gray: #2a2a3a;
+  --p5-light-gray: #e0e0e0;
+  --p5-card-bg: #161625;
+  --p5-accent: #ff4444;
+  --p5-pink: #ff6b9d;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Noto Sans JP', 'Oswald', sans-serif;
+  background: var(--p5-black);
+  color: var(--p5-white);
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* ============ LOADING SCREEN ============ */
+#loading-screen {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: var(--p5-black);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  transition: opacity 0.8s ease, visibility 0.8s ease;
+}
+
+#loading-screen.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.loading-text {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 4rem;
+  color: var(--p5-red);
+  letter-spacing: 0.3em;
+  animation: loadPulse 1.5s ease-in-out infinite;
+}
+
+.loading-bar {
+  width: 300px; height: 4px;
+  background: var(--p5-gray);
+  margin-top: 30px;
+  position: relative;
+  overflow: hidden;
+  transform: skewX(-20deg);
+}
+
+.loading-bar::after {
+  content: '';
+  position: absolute;
+  left: -100%; top: 0;
+  width: 100%; height: 100%;
+  background: var(--p5-red);
+  animation: loadSlide 1.5s ease-in-out infinite;
+}
+
+@keyframes loadPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes loadSlide {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+/* ============ HEADER ============ */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: var(--p5-black);
+  border-bottom: 3px solid var(--p5-red);
+  padding: 0;
+}
+
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 30px;
+  position: relative;
+}
+
+.header-top::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 40%;
+  height: 100%;
+  background: var(--p5-red);
+  clip-path: polygon(15% 0, 100% 0, 100% 100%, 0% 100%);
+  z-index: 0;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  z-index: 1;
+}
+
+.logo-text h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.8rem;
+  letter-spacing: 0.15em;
+  color: var(--p5-white);
+}
+
+.header-actions {
+  display: flex;
+  gap: 15px;
+  z-index: 1;
+}
+
+.btn-update {
+  background: var(--p5-yellow);
+  color: var(--p5-black);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 3px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-update:hover {
+  background: #ffed4e;
+  transform: translateY(-2px);
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #00ff00;
+  animation: pulse 2s infinite;
+}
+
+.status-dot.loading {
+  background: var(--p5-yellow);
+}
+
+.status-dot.error {
+  background: var(--p5-red);
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* ============ CONTENT ============ */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 30px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  background: var(--p5-card-bg);
+  border-left: 4px solid var(--p5-red);
+  padding: 20px;
+  text-align: center;
+}
+
+.stat-number {
+  font-size: 2.5rem;
+  color: var(--p5-yellow);
+  font-weight: bold;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: var(--p5-light-gray);
+  margin-top: 10px;
+}
+
+/* ============ PAPERS GRID ============ */
+.papers-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+.paper-card {
+  background: var(--p5-card-bg);
+  border: 1px solid var(--p5-gray);
+  border-left: 4px solid var(--p5-red);
+  padding: 20px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.paper-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(217, 35, 35, 0.3);
+}
+
+.paper-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.paper-institution {
+  background: var(--p5-red);
+  color: var(--p5-white);
+  padding: 5px 10px;
+  font-size: 0.8rem;
+  border-radius: 3px;
+}
+
+.paper-title {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+  line-height: 1.4;
+  color: var(--p5-white);
+}
+
+.paper-summary {
+  font-size: 0.9rem;
+  color: var(--p5-light-gray);
+  margin-bottom: 15px;
+  line-height: 1.6;
+  max-height: 100px;
+  overflow: hidden;
+}
+
+.paper-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  color: var(--p5-gray);
+  border-top: 1px solid var(--p5-gray);
+  padding-top: 10px;
+}
+
+.paper-date {
+  color: var(--p5-yellow);
+}
+
+.paper-link {
+  color: var(--p5-pink);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.paper-link:hover {
+  text-decoration: underline;
+}
+
+/* ============ MODAL ============ */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 2000;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal.active {
+  display: flex;
+}
+
+.modal-content {
+  background: var(--p5-card-bg);
+  border: 2px solid var(--p5-red);
+  padding: 30px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.modal-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: var(--p5-red);
+  color: white;
+  border: none;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  font-size: 1.5rem;
+}
+
+.modal-title {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  color: var(--p5-yellow);
+}
+
+.analysis-section {
+  margin-bottom: 20px;
+  padding: 15px;
+  background: var(--p5-dark);
+  border-left: 3px solid var(--p5-yellow);
+}
+
+.analysis-label {
+  color: var(--p5-yellow);
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.analysis-text {
+  color: var(--p5-light-gray);
+  line-height: 1.6;
+}
+
+/* ============ FOOTER ============ */
+footer {
+  background: var(--p5-dark);
+  border-top: 2px solid var(--p5-red);
+  padding: 30px;
+  text-align: center;
+  margin-top: 50px;
+}
+
+.footer-text {
+  color: var(--p5-light-gray);
+  font-size: 0.9rem;
+}
+
+.last-updated {
+  color: var(--p5-yellow);
+  margin-top: 10px;
+}
+
+/* ============ レスポンシブ ============ */
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
+  }
+
+  .papers-container {
+    grid-template-columns: 1fr;
+  }
+
+  .header-top {
+    padding: 10px 15px;
+  }
+
+  .loading-text {
+    font-size: 2.5rem;
+  }
+}
+
+/* ============ ローディング テキスト ============ */
+.loading-message {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--p5-light-gray);
+}
+
+.loading-message p {
+  margin: 10px 0;
+}
+
+.error-message {
+  background: rgba(217, 35, 35, 0.2);
+  border: 1px solid var(--p5-red);
+  color: var(--p5-white);
+  padding: 20px;
+  border-radius: 5px;
+  margin: 20px 0;
+}
+    </style>
+</head>
+<body>
+
+<!-- LOADING SCREEN -->
+<div id="loading-screen">
+    <div class="loading-text">LOADING</div>
+    <div class="loading-bar"></div>
+</div>
+
+<!-- HEADER -->
+<header>
+    <div class="header-top">
+        <div class="logo">
+            <div class="logo-text">
+                <h1>⚡ GLOBAL RESEARCH TERMINAL</h1>
+            </div>
+        </div>
+        <div class="header-actions">
+            <div class="status-indicator">
+                <div class="status-dot" id="status-dot"></div>
+                <span id="status-text">データ読込中...</span>
+            </div>
+            <button class="btn-update" id="btn-update-now">今すぐ更新</button>
+        </div>
+    </div>
+</header>
+
+<!-- MAIN CONTENT -->
+<main class="container">
+    <!-- STATS -->
+    <div class="stats-grid" id="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number" id="stat-total">0</div>
+            <div class="stat-label">論文総数</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="stat-countries">0</div>
+            <div class="stat-label">国数</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="stat-institutions">0</div>
+            <div class="stat-label">研究機関</div>
+        </div>
+    </div>
+
+    <!-- ERROR MESSAGE -->
+    <div id="error-container"></div>
+
+    <!-- PAPERS CONTAINER -->
+    <div id="papers-container" class="papers-container"></div>
+
+    <!-- LOADING STATE -->
+    <div id="loading-container" class="loading-message">
+        <p>📡 APIサーバーからデータを取得中...</p>
+        <p>少々お待ちください</p>
+    </div>
+</main>
+
+<!-- MODAL -->
+<div id="paper-modal" class="modal">
+    <div class="modal-content">
+        <button class="modal-close" onclick="closePaperModal()">&times;</button>
+        <div id="modal-body"></div>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+    <div class="footer-text">
+        🎭 PERSONA 5 THEMED GLOBAL RESEARCH TERMINAL
+    </div>
+    <div class="footer-text">
+        世界の最新学術研究を毎日自動集約
+    </div>
+    <div class="last-updated">
+        最終更新: <span id="last-updated-time">未取得</span>
+    </div>
+</footer>
+
+<!-- API CLIENT SCRIPT -->
+<script>
+// ==================== 設定 ====================
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+
+// ==================== グローバル変数 ====================
+let papersData = null;
+let statsData = null;
+let selectedPaper = null;
+
+// ==================== API 関数 ====================
+async function fetchPapers() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/papers`);
+        if (!response.ok) throw new Error('Failed to fetch papers');
+
+        const data = await response.json();
+        papersData = data;
+
+        return data;
+    } catch (error) {
+        console.error('Error fetching papers:', error);
+        showError('データ取得に失敗しました。APIサーバーが起動していることを確認してください。');
+        return null;
+    }
+}
+
+async function fetchStats() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/stats`);
+        if (!response.ok) throw new Error('Failed to fetch stats');
+
+        const data = await response.json();
+        statsData = data;
+
+        return data;
+    } catch (error) {
+        console.error('Error fetching stats:', error);
+        return null;
+    }
+}
+
+async function analyzePaper(title, summary) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/analyze-paper`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                title,
+                summary,
+                use_quality_model: false
+            })
+        });
+
+        if (!response.ok) throw new Error('Failed to analyze paper');
+
+        return await response.json();
+    } catch (error) {
+        console.error('Error analyzing paper:', error);
+        return null;
+    }
+}
+
+async function runAggregation() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/run-aggregation`, {
+            method: 'POST'
+        });
+
+        if (!response.ok) throw new Error('Failed to start aggregation');
+
+        const data = await response.json();
+        alert('✓ 論文取得を開始しました！\n（バックグラウンドで実行中）');
+
+        // 10秒後にデータを再読み込み
+        setTimeout(() => {
+            loadAllData();
+        }, 10000);
+
+        return data;
+    } catch (error) {
+        console.error('Error running aggregation:', error);
+        alert('❌ 更新の開始に失敗しました');
+        return null;
+    }
+}
+
+// ==================== UI 関数 ====================
+function showError(message) {
+    const container = document.getElementById('error-container');
+    container.innerHTML = `<div class="error-message">⚠️ ${message}</div>`;
+}
+
+function hideLoading() {
+    const screen = document.getElementById('loading-screen');
+    screen.classList.add('hidden');
+
+    const loading = document.getElementById('loading-container');
+    loading.style.display = 'none';
+}
+
+function setStatus(message, isLoading = false) {
+    const dot = document.getElementById('status-dot');
+    const text = document.getElementById('status-text');
+
+    text.textContent = message;
+    if (isLoading) {
+        dot.classList.add('loading');
+    } else {
+        dot.classList.remove('loading');
+        dot.classList.remove('error');
+    }
+}
+
+function updateStats(stats) {
+    document.getElementById('stat-total').textContent = stats.total_papers || 0;
+    document.getElementById('stat-countries').textContent = Object.keys(stats.countries || {}).length;
+
+    let institutionCount = 0;
+    for (const country of Object.values(stats.countries || {})) {
+        institutionCount += Object.keys(country.institutions || {}).length;
+    }
+    document.getElementById('stat-institutions').textContent = institutionCount;
+
+    if (stats.last_updated) {
+        const date = new Date(stats.last_updated);
+        document.getElementById('last-updated-time').textContent = date.toLocaleString('ja-JP');
+    }
+}
+
+function displayPapers(data) {
+    const container = document.getElementById('papers-container');
+    container.innerHTML = '';
+
+    const countries = data.countries || {};
+
+    for (const [countryCode, countryData] of Object.entries(countries)) {
+        const institutions = countryData.institutions || {};
+
+        for (const [instKey, instData] of Object.entries(institutions)) {
+            const papers = instData.papers || [];
+
+            for (const paper of papers) {
+                const card = document.createElement('div');
+                card.className = 'paper-card';
+                card.onclick = () => showPaperModal(paper);
+
+                const date = new Date(paper.published);
+                const dateStr = date.toLocaleDateString('ja-JP');
+
+                card.innerHTML = `
+                    <div class="paper-header">
+                        <span class="paper-institution">${paper.institution_ja || paper.institution}</span>
+                        <span>🌍 ${countryCode}</span>
+                    </div>
+                    <div class="paper-title">${paper.title}</div>
+                    <div class="paper-summary">${paper.summary}</div>
+                    <div class="paper-meta">
+                        <span class="paper-date">${dateStr}</span>
+                        <a class="paper-link" href="${paper.link}" target="_blank">arXiv ↗</a>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            }
+        }
+    }
+
+    if (container.children.length === 0) {
+        container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--p5-light-gray);">論文データがまだ読み込まれていません</p>';
+    }
+}
+
+async function showPaperModal(paper) {
+    const modal = document.getElementById('paper-modal');
+    const body = document.getElementById('modal-body');
+
+    selectedPaper = paper;
+
+    // ローディング状態を表示
+    body.innerHTML = `
+        <div class="modal-title">${paper.title}</div>
+        <p style="color: var(--p5-light-gray); text-align: center;">🤖 AI分析を生成中...</p>
+    `;
+
+    modal.classList.add('active');
+
+    // AI分析を取得
+    const analysis = await analyzePaper(paper.title, paper.summary);
+
+    if (analysis) {
+        body.innerHTML = `
+            <div class="modal-title">${paper.title}</div>
+
+            <div style="margin-bottom: 15px; padding: 10px; background: var(--p5-dark); border-left: 3px solid var(--p5-yellow);">
+                <div style="color: var(--p5-yellow); font-size: 0.9rem; margin-bottom: 5px;">📚  論文情報</div>
+                <p style="color: var(--p5-light-gray); margin: 5px 0;">著者: ${(paper.authors || []).map(a => a.name).join(', ')}</p>
+                <p style="color: var(--p5-light-gray); margin: 5px 0;">所属: ${paper.institution_ja || paper.institution}</p>
+                <p style="color: var(--p5-light-gray); margin: 5px 0;">掲載日: ${new Date(paper.published).toLocaleDateString('ja-JP')}</p>
+                <p style="color: var(--p5-light-gray); margin: 5px 0;"><a href="${paper.link}" target="_blank" style="color: var(--p5-pink);">arXiv ↗</a></p>
+            </div>
+
+            <div style="margin-bottom: 15px; padding: 10px; background: var(--p5-dark); border-left: 3px solid var(--p5-yellow);">
+                <div style="color: var(--p5-yellow); font-size: 0.9rem; margin-bottom: 5px;">📖 要約</div>
+                <p style="color: var(--p5-light-gray); line-height: 1.6;">${paper.summary}</p>
+            </div>
+
+            <div class="analysis-section">
+                <div class="analysis-label">🔍 AI分析・評価</div>
+                <div class="analysis-text">${analysis.analysis}</div>
+            </div>
+
+            <div class="analysis-section">
+                <div class="analysis-label">🚀 将来の発展性</div>
+                <div class="analysis-text">${analysis.prospects}</div>
+            </div>
+
+            <div style="font-size: 0.8rem; color: var(--p5-gray); text-align: right; margin-top: 15px;">
+                使用トークン: ${analysis.tokens_used} | モデル: ${analysis.model_used}
+            </div>
+        `;
+    } else {
+        body.innerHTML = `
+            <div class="modal-title">${paper.title}</div>
+            <p style="color: var(--p5-red);">⚠️ AI分析の生成に失敗しました</p>
+            <p style="color: var(--p5-light-gray);">（APIの応答が遅い可能性があります）</p>
+        `;
+    }
+}
+
+function closePaperModal() {
+    const modal = document.getElementById('paper-modal');
+    modal.classList.remove('active');
+    selectedPaper = null;
+}
+
+// ==================== メイン処理 ====================
+async function loadAllData() {
+    try {
+        setStatus('データを読み込み中...', true);
+
+        const papers = await fetchPapers();
+        const stats = await fetchStats();
+
+        if (papers && stats) {
+            displayPapers(papers);
+            updateStats(stats);
+            setStatus('✓ データ更新完了', false);
+        } else {
+            setStatus('⚠️ データ取得に失敗', false);
+        }
+
+        hideLoading();
+    } catch (error) {
+        console.error('Error loading data:', error);
+        setStatus('❌ エラー', false);
+        hideLoading();
+    }
+}
+
+// ==================== イベントリスナー ====================
+document.addEventListener('DOMContentLoaded', () => {
+    loadAllData();
+
+    document.getElementById('btn-update-now').addEventListener('click', () => {
+        runAggregation();
+    });
+
+    // モーダルを閉じる（背景クリック）
+    document.getElementById('paper-modal').addEventListener('click', (e) => {
+        if (e.target.id === 'paper-modal') {
+            closePaperModal();
+        }
+    });
+
+    // キーボードショートカット
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closePaperModal();
+        }
+    });
+});
+
+// 定期更新（30分ごと）
+setInterval(() => {
+    loadAllData();
+}, 30 * 60 * 1000);
+</script>
+
+</body>
+</html>

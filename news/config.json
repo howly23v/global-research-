@@ -1,0 +1,10 @@
+{
+  "scheduled_time": "09:00",
+  "update_interval_days": 1,
+  "max_papers_per_institution": 3,
+  "search_days_back": 7,
+  "data_file": "papers_data.json",
+  "html_file": "index.html",
+  "created_at": "2026-03-25T01:09:18.890082",
+  "os": "Windows"
+}

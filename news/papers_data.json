@@ -1,0 +1,135 @@
+{
+  "last_updated": "2026-03-25T01:10:24.531504",
+  "countries": {
+    "US": {
+      "flag": "🇺🇸",
+      "name_ja": "アメリカ",
+      "institutions": {
+        "MIT": {
+          "name_ja": "マサチューセッツ工科大学",
+          "papers": []
+        },
+        "Stanford": {
+          "name_ja": "スタンフォード大学",
+          "papers": []
+        },
+        "Harvard": {
+          "name_ja": "ハーバード大学",
+          "papers": []
+        },
+        "Caltech": {
+          "name_ja": "カリフォルニア工科大学",
+          "papers": []
+        },
+        "UC Berkeley": {
+          "name_ja": "カリフォルニア大学バークレー校",
+          "papers": []
+        }
+      }
+    },
+    "CN": {
+      "flag": "🇨🇳",
+      "name_ja": "中国",
+      "institutions": {
+        "Tsinghua": {
+          "name_ja": "清華大学",
+          "papers": []
+        },
+        "Peking University": {
+          "name_ja": "北京大学",
+          "papers": []
+        },
+        "CAS": {
+          "name_ja": "中国科学院",
+          "papers": []
+        },
+        "Zhejiang University": {
+          "name_ja": "浙江大学",
+          "papers": []
+        },
+        "Fudan University": {
+          "name_ja": "復旦大学",
+          "papers": []
+        }
+      }
+    },
+    "JP": {
+      "flag": "🇯🇵",
+      "name_ja": "日本",
+      "institutions": {
+        "University of Tokyo": {
+          "name_ja": "東京大学",
+          "papers": []
+        },
+        "Kyoto University": {
+          "name_ja": "京都大学",
+          "papers": []
+        },
+        "RIKEN": {
+          "name_ja": "理化学研究所",
+          "papers": []
+        },
+        "Osaka University": {
+          "name_ja": "大阪大学",
+          "papers": []
+        },
+        "Tohoku University": {
+          "name_ja": "東北大学",
+          "papers": []
+        }
+      }
+    },
+    "KR": {
+      "flag": "🇰🇷",
+      "name_ja": "韓国",
+      "institutions": {
+        "KAIST": {
+          "name_ja": "韓国科学技術院",
+          "papers": []
+        },
+        "Seoul National University": {
+          "name_ja": "ソウル大学校",
+          "papers": []
+        },
+        "POSTECH": {
+          "name_ja": "浦項工科大学校",
+          "papers": []
+        },
+        "Yonsei University": {
+          "name_ja": "延世大学校",
+          "papers": []
+        },
+        "KIST": {
+          "name_ja": "韓国科学技術研究院",
+          "papers": []
+        }
+      }
+    },
+    "RU": {
+      "flag": "🇷🇺",
+      "name_ja": "ロシア",
+      "institutions": {
+        "MSU": {
+          "name_ja": "モスクワ大学",
+          "papers": []
+        },
+        "RAS": {
+          "name_ja": "ロシア科学アカデミー",
+          "papers": []
+        },
+        "MIPT": {
+          "name_ja": "モスクワ物理工科大学",
+          "papers": []
+        },
+        "HSE": {
+          "name_ja": "高等経済学院",
+          "papers": []
+        },
+        "ITMO": {
+          "name_ja": "ITMO大学",
+          "papers": []
+        }
+      }
+    }
+  }
+}
